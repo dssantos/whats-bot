@@ -1,0 +1,6 @@
+*.sqlite3
+*.pyc
+__pycahe__
+profile
+.whats-bot
+chromedriver

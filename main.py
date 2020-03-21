@@ -3,7 +3,7 @@ from bot import wppbot
 
 bot = wppbot('robozin')
 bot.treina('treino')
-bot.inicia('Grupo dos Amigos')
+bot.inicia('Robot')
 bot.saudacao(['Bot: Oi, sou o robozin!','Bot: Use :: no início para falar comigo'])
 ultimo_texto = ''
 
