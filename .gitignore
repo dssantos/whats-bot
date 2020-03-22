@@ -5,3 +5,5 @@ profile
 .whats-bot
 chromedriver
 *.txt
+cardapio.json
+.env

@@ -1,11 +1,14 @@
 import os
 import time
 import re
+import json
 import requests
+from requests.auth import HTTPBasicAuth
 import json
 from chatterbot.trainers import ListTrainer
 from chatterbot import ChatBot
 from selenium import webdriver
+from decouple import config
 
 
 
@@ -130,35 +133,57 @@ class wppbot:
             conversas = open(nome_pasta+'/'+treino, 'r').readlines()
             self.bot.train(conversas)
 
-    def cardapio(self):
-        itens = ["Cerveja - R$ 5,00", "Coxinha - R$ 3,50", "Refri - R$ 4,00"]
-        for item in itens:
-            self.caixa_de_mensagem.send_keys(f'\n{self.nome_bot}: {item}')
-        time.sleep(1)
-        self.botao_enviar = self.driver.find_element_by_xpath("//span[@data-icon='send']")
-        self.botao_enviar.click()
-
     def bebidas(self):
-        itens = ["Água sem gás - R$ 2,00", "Água Tônica - R$ 3,50","Refrigerante litro - R$ 5,00"]
-        for item in itens:
-            self.caixa_de_mensagem.send_keys(f'\n{self.nome_bot}: {item}')
-        time.sleep(1)
-        self.botao_enviar = self.driver.find_element_by_xpath("//span[@data-icon='send']")
-        self.botao_enviar.click()
+        itens = self.filtra_categoria('1')
+        self.envia_cardapio(itens)
+
+    def salgados(self):
+        itens = self.filtra_categoria('2')
+        self.envia_cardapio(itens)
 
     def cervejas(self):
-        itens = ["Schin 600ml - R$ 5,00", "Devassa 600ml - R$ 6,00", "Itaipava 600ml - R$ 6,00"]
+        itens = self.filtra_categoria('3')
+        self.envia_cardapio(itens)
+
+    def tiragostos(self):
+        itens = self.filtra_categoria('4')
+        self.envia_cardapio(itens)
+        
+    def sincronizar(self):
+        API_URL = config('API_URL') # Variáveis definidas no arquivo  .env
+        API_USER = config('API_USER')
+        API_PASS = config('API_PASS')
+
+        r = requests.get(f'{API_URL}produtos/', auth=HTTPBasicAuth(API_USER, API_PASS))
+        file = open('cardapio.json', 'w+')
+        file.write(r.text)
+        file.close()
+
+    def filtra_categoria(self, cat):
+        file = open('cardapio.json', 'r')
+        if file.mode == 'r':
+            cardapio = file.read()
+
+        produtos = json.loads(cardapio)
+
+        itens = []
+        for produto in produtos['results']:
+            nome = produto['nome_produto']
+            preco = produto['preco']
+            categoria = produto['categoria'][-2]
+            if categoria == cat:
+                itens.append(f'{nome} - R$ {preco}')
+        return itens
+
+    def envia_cardapio(self, itens):
         for item in itens:
             self.caixa_de_mensagem.send_keys(f'\n{self.nome_bot}: {item}')
         time.sleep(1)
         self.botao_enviar = self.driver.find_element_by_xpath("//span[@data-icon='send']")
         self.botao_enviar.click()
 
-    def tiragostos(self):
-        itens = ["Camarão ao Alho e Óleo - R$ 25,00", "Carne do Sol - R$ 20,00", "Frango a Passarinha - R$ 16,00"]
-        for item in itens:
-            self.caixa_de_mensagem.send_keys(f'\n{self.nome_bot}: {item}')
+    def publica_mensagem(self, mensagem):
+        self.caixa_de_mensagem.send_keys(f'{self.nome_bot}: {mensagem}')
         time.sleep(1)
         self.botao_enviar = self.driver.find_element_by_xpath("//span[@data-icon='send']")
         self.botao_enviar.click()
-        

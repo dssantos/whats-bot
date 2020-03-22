@@ -6,7 +6,8 @@
 4. Instale as dependências
 5. Instale o chromedriver
 6. Crie a pasta treino
-7. Execute
+7. Crie o arquivo .env
+8. Execute
 
 ```console
 git clone https://github.com/dssantos/whats-bot.git
@@ -29,6 +30,7 @@ cp /usr/lib/chromium-browser/chromedriver .
 # sudo chmod +x chromedriver
 
 mkdir treino
+mv .env-exemplo .env
 
 # Executar
 python main.py
