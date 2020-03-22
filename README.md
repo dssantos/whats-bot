@@ -7,7 +7,8 @@
 5. Instale o chromedriver
 6. Crie a pasta treino
 7. Execute
-```
+
+```console
 git clone https://github.com/dssantos/whats-bot.git
 cd whats-bot
 python -m venv .whats-bot

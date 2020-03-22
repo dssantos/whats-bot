@@ -15,6 +15,7 @@ class wppbot:
 
     def __init__(self, nome_bot):
         print(self.dir_path)
+        self.nome_bot = nome_bot
         self.bot = ChatBot(nome_bot)
         self.bot.set_trainer(ListTrainer)
 
@@ -71,10 +72,10 @@ class wppbot:
         while self.x == True:
             texto = self.escuta()
 
-            if texto != ultimo_texto and re.match(r'^::', texto):
+            if texto != ultimo_texto and re.match(r'^\.\.\.', texto):
                 if texto.find('?') != -1:
                     ultimo_texto = texto
-                    texto = texto.replace('::', '')
+                    texto = texto.replace('...', '')
                     texto = texto.lower()
                     texto = texto.replace('?', '?*')
                     texto = texto.split('*')
@@ -108,7 +109,7 @@ class wppbot:
         for news in noticias['articles']:
             titulo = news['title']
             link = news['url']
-            new = 'bot: ' + titulo + ' ' + link + '\n'
+            new = f'{self.nome_bot}: ' + titulo + ' ' + link + '\n'
 
             self.caixa_de_mensagem.send_keys(new)
             time.sleep(1)
@@ -117,7 +118,7 @@ class wppbot:
         response = self.bot.get_response(texto)
         # if float(response.confidence) > 0.5:
         response = str(response)
-        response = 'bot: ' + response
+        response = f'{self.nome_bot}: ' + response
         self.caixa_de_mensagem = self.driver.find_element_by_class_name('_13mgZ')
         self.caixa_de_mensagem.send_keys(response)
         time.sleep(1)
@@ -128,3 +129,36 @@ class wppbot:
         for treino in os.listdir(nome_pasta):
             conversas = open(nome_pasta+'/'+treino, 'r').readlines()
             self.bot.train(conversas)
+
+    def cardapio(self):
+        itens = ["Cerveja - R$ 5,00", "Coxinha - R$ 3,50", "Refri - R$ 4,00"]
+        for item in itens:
+            self.caixa_de_mensagem.send_keys(f'\n{self.nome_bot}: {item}')
+        time.sleep(1)
+        self.botao_enviar = self.driver.find_element_by_xpath("//span[@data-icon='send']")
+        self.botao_enviar.click()
+
+    def bebidas(self):
+        itens = ["Água sem gás - R$ 2,00", "Água Tônica - R$ 3,50","Refrigerante litro - R$ 5,00"]
+        for item in itens:
+            self.caixa_de_mensagem.send_keys(f'\n{self.nome_bot}: {item}')
+        time.sleep(1)
+        self.botao_enviar = self.driver.find_element_by_xpath("//span[@data-icon='send']")
+        self.botao_enviar.click()
+
+    def cervejas(self):
+        itens = ["Schin 600ml - R$ 5,00", "Devassa 600ml - R$ 6,00", "Itaipava 600ml - R$ 6,00"]
+        for item in itens:
+            self.caixa_de_mensagem.send_keys(f'\n{self.nome_bot}: {item}')
+        time.sleep(1)
+        self.botao_enviar = self.driver.find_element_by_xpath("//span[@data-icon='send']")
+        self.botao_enviar.click()
+
+    def tiragostos(self):
+        itens = ["Camarão ao Alho e Óleo - R$ 25,00", "Carne do Sol - R$ 20,00", "Frango a Passarinha - R$ 16,00"]
+        for item in itens:
+            self.caixa_de_mensagem.send_keys(f'\n{self.nome_bot}: {item}')
+        time.sleep(1)
+        self.botao_enviar = self.driver.find_element_by_xpath("//span[@data-icon='send']")
+        self.botao_enviar.click()
+        
