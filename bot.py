@@ -118,15 +118,20 @@ class wppbot:
             time.sleep(1)
 
     def responde(self,texto):
-        response = self.bot.get_response(texto)
-        # if float(response.confidence) > 0.5:
-        response = str(response)
-        response = f'{self.nome_bot}: ' + response
-        self.caixa_de_mensagem = self.driver.find_element_by_class_name('_13mgZ')
-        self.caixa_de_mensagem.send_keys(response)
-        time.sleep(1)
-        self.botao_enviar = self.driver.find_element_by_xpath("//span[@data-icon='send']")
-        self.botao_enviar.click()
+
+        try:
+            itens = self.filtra_produto(texto)
+            self.envia_cardapio(itens)
+        except:          
+            response = self.bot.get_response(texto)
+            # if float(response.confidence) > 0.5:
+            response = str(response)
+            response = f'{self.nome_bot}: ' + response
+            self.caixa_de_mensagem = self.driver.find_element_by_class_name('_13mgZ')
+            self.caixa_de_mensagem.send_keys(response)
+            time.sleep(1)
+            self.botao_enviar = self.driver.find_element_by_xpath("//span[@data-icon='send']")
+            self.botao_enviar.click()
 
     def treina(self,nome_pasta):
         for treino in os.listdir(nome_pasta):
@@ -172,6 +177,21 @@ class wppbot:
             preco = produto['preco']
             categoria = produto['categoria'][-2]
             if categoria == cat:
+                itens.append(f'{nome} - R$ {preco}')
+        return itens
+
+    def filtra_produto(self, texto):
+        file = open('cardapio.json', 'r')
+        if file.mode == 'r':
+            cardapio = file.read()
+
+        produtos = json.loads(cardapio)
+
+        itens = []
+        for produto in produtos['results']:
+            nome = produto['nome_produto']
+            preco = produto['preco']
+            if nome.lower().find(texto.lower()) > -1:
                 itens.append(f'{nome} - R$ {preco}')
         return itens
 

@@ -30,7 +30,7 @@ cp /usr/lib/chromium-browser/chromedriver .
 # sudo chmod +x chromedriver
 
 mkdir treino
-mv .env-exemplo .env
+cp .env-exemplo .env
 
 # Executar
 python main.py
